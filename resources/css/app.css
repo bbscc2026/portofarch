@@ -1,0 +1,185 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Archivo Narrow', 'Hanken Grotesk', ui-sans-serif, sans-serif;
+    --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+
+    /* Monochrome, material palette: ink, concrete greys, warm plaster. */
+    --color-ink: #111111;
+    --color-graphite: #4f4e4b;
+    --color-mute: #8a8883;
+    --color-line: #dcd9d3;
+    --color-plaster: #f2f0ec;
+    --color-stone: #e4e0d8;
+    --color-arch: #8e1b1b;
+
+    --ease-arch: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-white font-sans text-ink antialiased;
+    }
+
+    ::selection {
+        @apply bg-ink text-white;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Highlight words (written as *word* in admin text): Instrument Serif italic, in normal case
+       even inside uppercase display titles. */
+    em.accent,
+    .accent {
+        @apply font-serif font-normal tracking-normal normal-case italic;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+    }
+}
+
+/* Page gutter used by every section. */
+@utility wrap {
+    @apply mx-auto w-full max-w-[1680px] px-5 sm:px-8 lg:px-12;
+}
+
+/* Small uppercase label: nav, metadata keys, section indices. */
+@utility label {
+    @apply text-[11px] font-medium tracking-[0.16em] uppercase;
+}
+
+/* Large editorial statement text. */
+@utility statement {
+    @apply text-[clamp(1.6rem,3.4vw,3.4rem)] leading-[1.1] font-light tracking-[-0.02em];
+}
+
+/* Condensed display title. */
+@utility display {
+    @apply font-display font-medium uppercase leading-[0.88] tracking-[-0.01em];
+}
+
+@utility link-line {
+    @apply bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 ease-arch hover:bg-[length:100%_1px];
+}
+
+/* Rectangular outline button; the fill wipes in from the left on hover. */
+@utility btn {
+    @apply relative isolate inline-flex min-h-12 items-center justify-between gap-6 overflow-hidden border border-current px-5 text-[11px] font-medium tracking-[0.16em] uppercase transition-colors duration-500 ease-arch;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--btn-fill, var(--color-ink));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-arch);
+}
+
+.btn:hover::before {
+    transform: scaleX(1);
+}
+
+.btn:hover {
+    color: var(--btn-hover-text, #fff);
+}
+
+/* On dark backgrounds: white fill, ink text. */
+.btn-light {
+    --btn-fill: #fff;
+    --btn-hover-text: var(--color-ink);
+}
+
+/* Solid ink button. */
+.btn-solid {
+    @apply border-ink bg-ink text-white;
+    --btn-fill: var(--color-graphite);
+    --btn-hover-text: #fff;
+}
+
+/* Header: white over a hero image, solid once scrolled or on pages without a hero. */
+.site-header {
+    color: #fff;
+    transition: background-color 0.5s var(--ease-arch), color 0.5s var(--ease-arch), box-shadow 0.5s var(--ease-arch), transform 0.6s var(--ease-arch);
+}
+
+.site-header .site-logo {
+    transition: filter 0.5s var(--ease-arch);
+}
+
+.site-header.is-solid {
+    background-color: rgb(255 255 255 / 0.97);
+    color: var(--color-ink);
+    box-shadow: 0 1px 0 var(--color-line);
+}
+
+.site-header.is-solid .site-logo {
+    filter: invert(1);
+}
+
+.site-header.is-hidden {
+    transform: translateY(-100%);
+}
+
+/* Animation start states — applied only when JS animations are running, so content never stays hidden. */
+.motion [data-reveal] {
+    opacity: 0;
+    transform: translateY(32px);
+}
+
+.motion [data-clip] {
+    clip-path: inset(100% 0 0 0);
+}
+
+.motion [data-split] {
+    visibility: hidden;
+}
+
+/* Hero statements: without animation only the first one shows; with animation JS reveals them in turn. */
+html:not(.motion) .hero-statement:not(.is-first) {
+    display: none;
+}
+
+.motion [data-hero-text] {
+    visibility: hidden;
+}
+
+.hero-scroll-line {
+    animation: scroll-line 1.8s var(--ease-arch) infinite;
+}
+
+@keyframes scroll-line {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(200%); }
+}
+
+.split-line {
+    overflow: hidden;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+}
+
+.img-zoom img {
+    transition: transform 1.6s var(--ease-arch);
+}
+
+.img-zoom:hover img {
+    transform: scale(1.03);
+}
